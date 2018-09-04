@@ -50,11 +50,11 @@ namespace ConsoleApp1
             public override string ToString()
             {
                 return ItemDescription +
-                "\n Ilosc: " + InvoiceQuantity +
+                "\n xxxx Ilosc: " + InvoiceQuantity +
                 "\t cena: " + InvoiceUnitNetPrice +
-                "\t Sztuk: " + InvoiceQuantity * (InvoiceUnitPacksize) +
+                //"\t Sztuk: " + InvoiceQuantity * (InvoiceUnitPacksize) +
                 "\t Cena za sztuke: " + InvoiceSingleNetPrice +
-                "\t Cena za szt * ilosc szt: " + InvoiceUnitAllSingleNetPrice +
+                //"\t Cena za szt * ilosc szt: " + InvoiceUnitAllSingleNetPrice +
                 "\t podatek: " + TaxRate + "\n";
             }
         }
@@ -200,6 +200,11 @@ namespace ConsoleApp1
                // Console.WriteLine(item.ToString());
             }
 
+            //foreach  ( Product p in wynik)
+            //{
+            //    Console.WriteLine(p.ToString());
+            //}
+
             Console.WriteLine("Total: " + total);
             double wyn = Math.Round(total, 2);
             Console.WriteLine(sum);
@@ -232,6 +237,7 @@ namespace ConsoleApp1
 
             Product p1 = new Product(item.ItemDescription, item.InvoiceQuantity, item.InvoiceUnitPacksize, item.InvoiceUnitNetPrice, item.TaxRate);
             p1.InvoiceSingleQuantity = ilosc;
+            
             p1.InvoiceSingleNetPrice += 0.01;
 
             Product p2 = item;
