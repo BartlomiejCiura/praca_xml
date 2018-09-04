@@ -20,17 +20,17 @@ namespace ConsoleApp1
             public double TaxRate; // podatek
             public double InvoiceSingleNetPrice; // cena za sztukę
 
-            //public Product(string itemDescription, string invoiceQuantity, string invoiceUnitPacksize, string invoiceUnitNetPrice, string taxRate)
-            //{
-            //    ItemDescription = itemDescription;
-            //    InvoiceQuantity = Convert.ToDouble(invoiceQuantity);
-            //    InvoiceUnitPacksize = Convert.ToDouble(invoiceUnitPacksize);
-            //    InvoiceUnitNetPrice = Convert.ToDouble(invoiceUnitNetPrice);
-            //    TaxRate = Convert.ToDouble(taxRate);
+            public Product(string itemDescription, string invoiceQuantity, string invoiceUnitPacksize, string invoiceUnitNetPrice, string taxRate)
+            {
+                ItemDescription = itemDescription;
+                InvoiceQuantity = Convert.ToDouble(invoiceQuantity);
+                InvoiceUnitPacksize = Convert.ToDouble(invoiceUnitPacksize);
+                InvoiceUnitNetPrice = Convert.ToDouble(invoiceUnitNetPrice);
+                TaxRate = Convert.ToDouble(taxRate);
 
-            //    InvoiceSingleNetPrice = (Math.Floor((InvoiceUnitNetPrice / InvoiceUnitPacksize) * 100)) / 100;
-            //    InvoiceUnitAllSingleNetPrice = InvoiceSingleNetPrice * InvoiceQuantity * InvoiceUnitPacksize;
-            //}
+                InvoiceSingleNetPrice = (Math.Floor((InvoiceUnitNetPrice / InvoiceUnitPacksize) * 100)) / 100;
+                InvoiceUnitAllSingleNetPrice = InvoiceSingleNetPrice * InvoiceQuantity * InvoiceUnitPacksize;
+            }
 
             public Product(string itemDescription, double invoiceQuantity, double invoiceUnitPacksize, double invoiceUnitNetPrice, double taxRate)
             {
@@ -197,7 +197,7 @@ namespace ConsoleApp1
             foreach (Product item in wynik)
             {
                 total += item.InvoiceSingleQuantity * item.InvoiceSingleNetPrice;
-                Console.WriteLine(item.ToString());
+               // Console.WriteLine(item.ToString());
             }
 
             Console.WriteLine("Total: " + total);
