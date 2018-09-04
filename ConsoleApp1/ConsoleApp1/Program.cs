@@ -19,26 +19,18 @@ namespace ConsoleApp1
             public double InvoiceUnitNetPrice; // cena za opakowanie
             public double TaxRate; // podatek
             public double InvoiceSingleNetPrice; // cena za sztukę
-            public double Difference;
 
-            public Product(string itemDescription, string invoiceQuantity, string invoiceUnitPacksize, string invoiceUnitNetPrice, string taxRate)
-            {
-                ItemDescription = itemDescription;
-                InvoiceQuantity = Convert.ToDouble(invoiceQuantity);
-                InvoiceUnitPacksize = Convert.ToDouble(invoiceUnitPacksize);
-                InvoiceUnitNetPrice = Convert.ToDouble(invoiceUnitNetPrice);
-                TaxRate = Convert.ToDouble(taxRate);
+            //public Product(string itemDescription, string invoiceQuantity, string invoiceUnitPacksize, string invoiceUnitNetPrice, string taxRate)
+            //{
+            //    ItemDescription = itemDescription;
+            //    InvoiceQuantity = Convert.ToDouble(invoiceQuantity);
+            //    InvoiceUnitPacksize = Convert.ToDouble(invoiceUnitPacksize);
+            //    InvoiceUnitNetPrice = Convert.ToDouble(invoiceUnitNetPrice);
+            //    TaxRate = Convert.ToDouble(taxRate);
 
-                InvoiceSingleNetPrice = (Math.Floor((InvoiceUnitNetPrice / InvoiceUnitPacksize) * 100)) / 100;
-                InvoiceUnitAllSingleNetPrice = InvoiceSingleNetPrice * InvoiceQuantity * InvoiceUnitPacksize;
-            //    Difference = Math.Round(((InvoiceQuantity * InvoiceUnitNetPrice)-InvoiceUnitAllSingleNetPrice), 2);
-                // InvoiceUnitAllSingleNetPrice += Difference;
-                //InvoiceSingleNetPrice += Difference / InvoiceUnitPacksize;
-
-               // InvoiceUnitAllSingleNetPrice = InvoiceSingleNetPrice * InvoiceQuantity * InvoiceUnitPacksize;
-
-                Console.WriteLine(Difference);
-            }
+            //    InvoiceSingleNetPrice = (Math.Floor((InvoiceUnitNetPrice / InvoiceUnitPacksize) * 100)) / 100;
+            //    InvoiceUnitAllSingleNetPrice = InvoiceSingleNetPrice * InvoiceQuantity * InvoiceUnitPacksize;
+            //}
 
             public Product(string itemDescription, double invoiceQuantity, double invoiceUnitPacksize, double invoiceUnitNetPrice, double taxRate)
             {
@@ -54,8 +46,6 @@ namespace ConsoleApp1
 
             public double GetInvoiceSingleNetPrice() => InvoiceSingleNetPrice;
             public double GetInvoiceUnitAllSingleNetPrice() => InvoiceUnitAllSingleNetPrice;
-            public double GetDiffrence() => Difference;
-
 
             public override string ToString()
             {
@@ -107,6 +97,27 @@ namespace ConsoleApp1
             }
         }
 
+        class Summary
+        {
+            public double TotalNetAmount { get; }
+
+            public Summary(double totalNetAmount)
+            {
+                TotalNetAmount = Convert.ToDouble(totalNetAmount);
+            }
+
+            public Summary()
+            {
+            }
+
+            public override string ToString()
+            {
+                return "Suma netto z dokumentu: " + TotalNetAmount;
+            }
+        }
+
+
+
         static void Main(string[] args)
         {
 
@@ -141,6 +152,20 @@ namespace ConsoleApp1
                 Console.WriteLine(sellerDetails.ToString());
             }
 
+            //-----------------SUMMARY
+            var summary = from s in document.Descendants("Invoice-Summary")
+                          select new
+                          {
+                              TotalNetAmount = s.Element("TotalNetAmount").Value,
+                          };
+
+            Summary sum = new Summary();
+            foreach (var item in summary)
+            {
+                sum = new Summary(Convert.ToDouble(item.TotalNetAmount));
+            }
+
+
             // ------------- PRODUCTS
             var products = from r in document.Descendants("Line-Item")
                            select new
@@ -155,7 +180,7 @@ namespace ConsoleApp1
 
             foreach (var r in products)
             {
-                productsList.Add(new Product(r.ItemDescription, r.InvoiceQuantity, r.InvoiceUnitPacksize, r.InvoiceUnitNetPrice, r.TaxRate));
+                productsList.Add(new Product(r.ItemDescription, Convert.ToDouble(r.InvoiceQuantity), Convert.ToDouble(r.InvoiceUnitPacksize), Convert.ToDouble(r.InvoiceUnitNetPrice), Convert.ToDouble(r.TaxRate)));
             }
 
             List<Product> wynik = new List<Product>();
@@ -163,7 +188,7 @@ namespace ConsoleApp1
             {
                 List<Product> splitedProduct = CalculatePrice(item);
                 wynik.AddRange(splitedProduct);
-                Console.WriteLine(item.ToString());
+               // Console.WriteLine(item.ToString());
             }
 
 
@@ -172,16 +197,35 @@ namespace ConsoleApp1
             foreach (Product item in wynik)
             {
                 total += item.InvoiceSingleQuantity * item.InvoiceSingleNetPrice;
+                Console.WriteLine(item.ToString());
             }
 
-                Console.WriteLine("Total: " + total);
+            Console.WriteLine("Total: " + total);
+            double wyn = Math.Round(total, 2);
+            Console.WriteLine(sum);
+
+            try
+            {
+                if (!wyn.Equals(sum.TotalNetAmount))
+                {
+                    throw new InvalidOperationException("UWAGA!!!! Dane dane się różnią!!!!!!!");
+                }
+                else
+                Console.WriteLine("Swietnie, wszystko sie zgadza");
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
         }
 
+
         private static List<Product> CalculatePrice(Product item)
         {
-            double cena = item.GetInvoiceSingleNetPrice();
-            double wartoscZaokr = item.InvoiceQuantity * item.InvoiceUnitPacksize * cena;
+            
+            double wartoscZaokr = item.InvoiceQuantity * item.InvoiceUnitPacksize * item.GetInvoiceSingleNetPrice();
             double wartReal = item.InvoiceQuantity * item.InvoiceUnitNetPrice;
             double r = Math.Abs( wartoscZaokr - wartReal);
             int ilosc = (int)Math.Round(r * 100); 
