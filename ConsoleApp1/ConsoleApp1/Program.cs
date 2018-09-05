@@ -26,7 +26,7 @@ namespace ConsoleApp1
 
             foreach (var d in details)
             {
-                Details detailsInfo = new Details(Convert.ToDouble( d.InvoiceNumber),Convert.ToDouble( d.InvoiceDate),Convert.ToDouble( d.SalesDate));
+                Details detailsInfo = new Details( d.InvoiceNumber, d.InvoiceDate, d.SalesDate);
                 Console.WriteLine(detailsInfo.ToString());
             };
 
